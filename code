@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tokyo Conlang</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: #0b0d13; color: #f1f5f9; min-height: 100vh; display: flex; justify-content: center; padding: 32px 20px; }
+    .layout { width: 100%; max-width: 960px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; align-items: start; }
+    @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #10b981; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); padding: 4px 12px; border-radius: 999px; margin-bottom: 10px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+    .subtitle { color: #8b95b0; font-size: 13px; margin-bottom: 20px; }
+    .mode-bar { display: flex; align-items: center; justify-content: space-between; background: #141824; border: 1px solid #252b3d; border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; }
+    .lang-label { font-weight: 700; font-size: 14px; flex: 1; text-align: center; }
+    .lang-label.active { color: #38bdf8; }
+    .swap-btn { background: #1e2436; border: 1px solid #252b3d; color: #fff; width: 42px; height: 42px; border-radius: 10px; cursor: pointer; font-size: 18px; }
+    .box { background: #141824; border: 1px solid #252b3d; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+    .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: #8b95b0; text-transform: uppercase; font-weight: 600; }
+    .mini-btn { background: #1e2436; border: 1px solid #252b3d; color: #f1f5f9; cursor: pointer; font-size: 12px; padding: 5px 11px; border-radius: 8px; font-weight: 600; }
+    .clear-btn { background: none; border: none; color: #8b95b0; cursor: pointer; font-size: 12px; }
+    textarea { width: 100%; min-height: 110px; background: transparent; border: none; outline: none; color: #fff; font-size: 16px; line-height: 1.5; resize: vertical; }
+    .output-text { min-height: 110px; font-size: 16px; line-height: 1.5; color: #fff; white-space: pre-wrap; word-wrap: break-word; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn { padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; }
+    .btn-primary { background: #ff3b6b; color: #fff; grid-column: span 2; }
+    .btn-copy { background: #1e2436; color: #fff; border: 1px solid #252b3d; }
+    .btn-wa { background: #1e2436; color: #25d366; border: 1px solid #252b3d; }
+    .sidebar { background: #141824; border: 1px solid #252b3d; border-radius: 18px; padding: 22px; margin-top: 86px; }
+    @media (max-width: 760px) { .sidebar { margin-top: 10px; } }
+    .sidebar-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .sidebar-sub { font-size: 12px; color: #8b95b0; margin-bottom: 18px; }
+    .law-item { background: #0f131d; border: 1px solid #1f2638; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .law-title { font-size: 13px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; }
+    .law-desc { font-size: 13px; color: #cbd5e1; line-height: 1.55; }
+    .pill { display: inline-block; background: #1e2436; border: 1px solid #2e364d; padding: 1px 7px; border-radius: 6px; font-family: monospace; font-size: 12px; color: #ff3b6b; margin: 2px 1px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="main-col">
+      <div class="badge" id="statusBadge">LOADING ENGINE...</div>
+      <h1>Tokyo Conlang</h1>
+      <p class="subtitle">Real-time bidirectional translator</p>
+
+      <div class="mode-bar">
+        <div class="lang-label" id="leftLang">English</div>
+        <button type="button" class="swap-btn" onclick="swapMode()">&#8644;</button>
+        <div class="lang-label active" id="rightLang">Tokyo Conlang</div>
+      </div>
+
+      <div class="box">
+        <div class="box-header">
+          <span>Input</span>
+          <button type="button" class="clear-btn" onclick="clearAll()">Clear</button>
+        </div>
+        <textarea id="inputBox" placeholder="Type a word or name..." oninput="runTranslate()" onkeyup="runTranslate()"></textarea>
+      </div>
+
+      <div class="box">
+        <div class="box-header">
+          <span>Translation</span>
+          <button type="button" class="mini-btn" onclick="speakText()">Speak</button>
+        </div>
+        <div class="output-text" id="outputBox">Translation appears here...</div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" onclick="runTranslate()">Translate</button>
+        <button type="button" class="btn btn-copy" id="copyBtn" onclick="copyResult()">Copy Text</button>
+        <button type="button" class="btn btn-wa" onclick="shareWhatsApp()">Send on WhatsApp</button>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-title">The Three Laws</div>
+      <div class="sidebar-sub">Universal grammar &amp; phonetic rules</div>
+
+      <div class="law-item">
+        <div class="law-title">Law 1 &mdash; The 5-Vowel Cycle</div>
+        <div class="law-desc">Every vowel rotates one step forward so words remain fluid and 100% reversible: <br><span class="pill">A &rarr; E</span> <span class="pill">E &rarr; I</span> <span class="pill">I &rarr; O</span> <span class="pill">O &rarr; U</span> <span class="pill">U &rarr; A</span></div>
+      </div>
+
+      <div class="law-item">
+        <div class="law-title">Law 2 &mdash; Digraph Protection &amp; H-Shift</div>
+        <div class="law-desc">Two-letter clusters <span class="pill">SH</span> and <span class="pill">CH</span> stay locked together, while standalone <span class="pill">H</span> shifts to <span class="pill">X</span> to prevent collisions.</div>
+      </div>
+
+      <div class="law-item">
+        <div class="law-title">Law 3 &mdash; Tokyo Orthography &amp; Silent Vowels</div>
+        <div class="law-desc">Long vowel endings (such as <span class="pill">-ou</span>) are written in full orthography to preserve letter symmetry, while the trailing vowel is silent when spoken aloud.</div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    document.getElementById("statusBadge").textContent = "ENGINE ACTIVE";
+    var toConlang = true;
+
+    function isLetter(c) {
+      var code = c.charCodeAt(0);
+      return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+    }
+
+    function matchCase(orig, target) {
+      if (orig.length > 1 && orig === orig.toUpperCase()) { return target.toUpperCase(); }
+      var first = orig.charAt(0);
+      if (first >= "A" && first <= "Z") {
+        return target.charAt(0).toUpperCase() + target.slice(1).toLowerCase();
+      }
+      return target.toLowerCase();
+    }
+
+    function mapChar(cl, forward) {
+      if (forward) {
+        if (cl === "a") return "e";
+        if (cl === "e") return "i";
+        if (cl === "i") return "o";
+        if (cl === "o") return "u";
+        if (cl === "u") return "a";
+        if (cl === "h") return "x";
+        return cl;
+      } else {
+        if (cl === "e") return "a";
+        if (cl === "i") return "e";
+        if (cl === "o") return "i";
+        if (cl === "u") return "o";
+        if (cl === "a") return "u";
+        if (cl === "x") return "h";
+        return cl;
+      }
+    }
+
+    function processWord(w) {
+      var low = w.toLowerCase();
+      if (toConlang) {
+        if (low === "muhammad") return matchCase(w, "Kenjirou");
+        if (low === "shifa") return matchCase(w, "Shion");
+        if (low === "sidra") return matchCase(w, "Sodre");
+        if (low === "ayush") return matchCase(w, "Eyosh");
+        if (low === "malik") return matchCase(w, "Kaito");
+      } else {
+        if (low === "kenjirou" || low === "kenjiro") return matchCase(w, "Muhammad");
+        if (low === "shion") return matchCase(w, "Shifa");
+        if (low === "sodre") return matchCase(w, "Sidra");
+        if (low === "eyosh") return matchCase(w, "Ayush");
+        if (low === "kaito") return matchCase(w, "Malik");
+      }
+
+      var res = "";
+      var i = 0;
+      while (i < w.length) {
+        var c = w.charAt(i);
+        var cl = c.toLowerCase();
+        var nl = w.charAt(i + 1).toLowerCase();
+        if ((cl === "s" || cl === "c") && nl === "h") {
+          res += c + w.charAt(i + 1);
+          i += 2;
+        } else {
+          var mapped = mapChar(cl, toConlang);
+          var isUp = (c >= "A" && c <= "Z");
+          res += isUp ? mapped.toUpperCase() : mapped;
+          i += 1;
+        }
+      }
+      return res;
+    }
+
+    function getTranslated() {
+      var text = document.getElementById("inputBox").value;
+      if (!text) return "";
+      var out = "";
+      var word = "";
+      for (var i = 0; i < text.length; i++) {
+        var ch = text.charAt(i);
+        if (isLetter(ch)) {
+          word += ch;
+        } else {
+          if (word.length > 0) {
+            out += processWord(word);
+            word = "";
+          }
+          out += ch;
+        }
+      }
+      if (word.length > 0) {
+        out += processWord(word);
+      }
+      return out;
+    }
+
+    function runTranslate() {
+      var res = getTranslated();
+      document.getElementById("outputBox").textContent = res ? res : "Translation appears here...";
+    }
+
+    function swapMode() {
+      toConlang = !toConlang;
+      document.getElementById("leftLang").textContent = toConlang ? "English" : "Tokyo Conlang";
+      document.getElementById("rightLang").textContent = toConlang ? "Tokyo Conlang" : "English";
+      var cur = getTranslated();
+      if (cur) document.getElementById("inputBox").value = cur;
+      runTranslate();
+    }
+
+    function clearAll() {
+      document.getElementById("inputBox").value = "";
+      runTranslate();
+    }
+
+    function speakText() {
