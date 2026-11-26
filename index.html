@@ -18,14 +18,10 @@ h1{font-size:28px;font-weight:800;margin-bottom:4px}
 .swp{background:#1e2436;border:1px solid #252b3d;color:#fff;width:42px;height:42px;border-radius:10px;cursor:pointer;font-size:18px}
 .box{background:#141824;border:1px solid #252b3d;border-radius:16px;padding:16px;margin-bottom:14px}
 .bh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:#8b95b0;text-transform:uppercase;font-weight:600}
-.mb{background:#1e2436;border:1px solid #252b3d;color:#f1f5f9;cursor:pointer;font-size:12px;padding:5px 11px;border-radius:8px;font-weight:600}
 .cb{background:none;border:none;color:#8b95b0;cursor:pointer;font-size:12px}
 textarea{width:100%;min-height:110px;background:transparent;border:none;outline:none;color:#fff;font-size:16px;line-height:1.5;resize:vertical}
 .out{min-height:110px;font-size:16px;line-height:1.5;color:#fff;white-space:pre-wrap;word-wrap:break-word}
-.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{padding:13px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer}
-.bp{background:#ff3b6b;color:#fff;grid-column:span 2}
-.bc{background:#1e2436;color:#fff;border:1px solid #252b3d;grid-column:span 2}
+.bc{width:100%;padding:13px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;background:#ff3b6b;color:#fff}
 .side{background:#141824;border:1px solid #252b3d;border-radius:18px;padding:22px;margin-top:86px}
 @media(max-width:760px){.side{margin-top:10px}}
 .st{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:18px}
@@ -50,8 +46,8 @@ textarea{width:100%;min-height:110px;background:transparent;border:none;outline:
 <p class="sub">Real-time bidirectional translator</p>
 <div class="bar"><div class="lbl" id="lLang">English</div><button type="button" class="swp" id="swpBtn">&#8644;</button><div class="lbl act" id="rLang">Tokyo Conlang</div></div>
 <div class="box"><div class="bh"><span>Input</span><button type="button" class="cb" id="clrBtn">Clear</button></div><textarea id="inBox" placeholder="Type a word or name..."></textarea></div>
-<div class="box"><div class="bh"><span>Translation</span><button type="button" class="mb" id="spkBtn">Speak</button></div><div class="out" id="outBox">Translation appears here...</div></div>
-<div class="acts"><button type="button" class="btn bp" id="trnBtn">Translate</button><button type="button" class="btn bc" id="cpyBtn">Copy Text</button></div>
+<div class="box"><div class="bh"><span>Translation</span></div><div class="out" id="outBox">Translation appears here...</div></div>
+<button type="button" class="bc" id="cpyBtn">Copy Text</button>
 </div>
 <aside class="side">
 <div class="st"><div><div class="stitle" id="sTitle">The Three Laws</div><div class="ssub" id="sSub">Universal grammar &amp; phonetic rules</div></div><button type="button" class="scb" id="togBtn">Alphabet Chart &rarr;</button></div>
@@ -75,10 +71,8 @@ function pWord(w){var low=w.toLowerCase();var tc={muhammad:"Kenjirou",shifa:"Shi
 function getT(){var t=document.getElementById("inBox").value;if(!t)return"";var o="",w="";for(var i=0;i<t.length;i++){var ch=t.charAt(i);if(isL(ch))w+=ch;else{if(w){o+=pWord(w);w="";}o+=ch;}}if(w)o+=pWord(w);return o;}
 function run(){var r=getT();document.getElementById("outBox").textContent=r||"Translation appears here...";}
 document.getElementById("inBox").oninput=run;
-document.getElementById("trnBtn").onclick=run;
 document.getElementById("swpBtn").onclick=function(){var cur=getT();toCon=!toCon;document.getElementById("lLang").textContent=toCon?"English":"Tokyo Conlang";document.getElementById("rLang").textContent=toCon?"Tokyo Conlang":"English";if(cur)document.getElementById("inBox").value=cur;run();};
 document.getElementById("clrBtn").onclick=function(){document.getElementById("inBox").value="";run();};
-document.getElementById("spkBtn").onclick=function(){var r=getT();if(!r||!("speechSynthesis"in window))return;var b=document.getElementById("spkBtn");window.speechSynthesis.cancel();var s=r.split("Kenjirou").join("Kenjiro").split("kenjirou").join("kenjiro");setTimeout(function(){var u=new SpeechSynthesisUtterance(s);u.lang="en-US";u.rate=0.95;b.textContent="Speaking...";u.onend=function(){b.textContent="Speak";};u.onerror=function(){b.textContent="Speak";};window.speechSynthesis.speak(u);},60);};
 document.getElementById("cpyBtn").onclick=function(){var r=getT();if(!r)return;navigator.clipboard.writeText(r);var b=document.getElementById("cpyBtn");b.textContent="Copied!";setTimeout(function(){b.textContent="Copy Text";},1500);};
 document.getElementById("togBtn").onclick=function(){showA=!showA;document.getElementById("lawsV").style.display=showA?"none":"block";document.getElementById("alphaV").style.display=showA?"block":"none";document.getElementById("sTitle").textContent=showA?"Alphabet Key":"The Three Laws";document.getElementById("sSub").textContent=showA?"A-Z letter conversion chart":"Universal grammar & phonetic rules";this.textContent=showA?"Three Laws":"Alphabet Chart";};
 document.getElementById("badge").textContent="ENGINE ACTIVE";
